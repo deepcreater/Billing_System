@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request, jsonify
 from pymongo import MongoClient
+from pymongo.errors import ConnectionFailure
 from datetime import datetime
 from bson.json_util import dumps
 import logging
 import os
-
+import time
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -14,13 +15,34 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # MongoDB Connection
+def connect_to_mongo():
+    max_retries = 5
+    retry_delay = 5
+    MONGO_URI = os.getenv("MONGO_URI")
+    if not MONGO_URI:
+        logger.error("MONGO_URI environment variable not set")
+        raise ValueError("MONGO_URI environment variable not set")
+    for attempt in range(max_retries):
+        try:
+            client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+            client.admin.command('ping')  # Test the connection
+            logger.info("✅ Successfully connected to MongoDB.")
+            return client
+        except ConnectionFailure as e:
+            logger.error("Attempt %d: Error connecting to MongoDB: %s", attempt + 1, e)
+            if attempt < max_retries - 1:
+                time.sleep(retry_delay)
+            else:
+                raise
+
 try:
-    MONGO_URI = os.getenv("MONGO_URI") or "mongodb+srv://deepak7232914731:eaZ99fUMJd1wfGOR@cluster0.woqbxsd.mongodb.net/?retryWrites=true&w=majority&tls=true"
+    client = connect_to_mongo()
     db = client["billing_db"]
-    logger.info("✅ Successfully connected to MongoDB.")
 except Exception as e:
-    logger.error("❌ Error connecting to MongoDB: %s", e)
+    logger.error("❌ Failed to connect to MongoDB: %s", e)
     raise
+
+# Rest of your routes remain unchanged
 
 @app.route('/')
 def index():
