@@ -40,14 +40,7 @@ def close_db(exception):
 
 @app.route('/')
 def index():
-    """Render the main page with the list of products."""
-    try:
-        db = get_db()     
-         products = list(db.products.find({}, {"_id": 1, "name": 1, "price": 1}))
-        return render_template('index.html', products=products)
-    except Exception as e:
-        logger.error("Error fetching products or rendering template: %s", e)
-        return render_template('error.html', error="Failed to fetch products"), 500
+    return render_template('index.html')
 
 @app.route('/add_product', methods=['POST'])
 def add_product():
