@@ -8,7 +8,6 @@ import certifi
 from dotenv import load_dotenv
 
 
-client = MongoClient(MONGO_URI, tls=True, tlsCAFile=certifi.where())
 
 
 # Load environment variables
