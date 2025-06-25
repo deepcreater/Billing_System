@@ -1,5 +1,5 @@
-from flask import Flask, render_template, request, jsonify
-from pymongo import pymongo
+from flask import Flask, render_template, request, jsonify, g
+from pymongo import MongoClient
 from bson import ObjectId
 from datetime import datetime
 import logging
@@ -155,4 +155,4 @@ def get_invoices():
         return jsonify({"message": "Failed to fetch invoices"}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
