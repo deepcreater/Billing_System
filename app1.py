@@ -1,11 +1,9 @@
 from flask import Flask, render_template, request, jsonify
 from pymongo import MongoClient
-from pymongo.errors import ConnectionFailure
 from datetime import datetime
 from bson.json_util import dumps
 import logging
 import os
-import time
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -15,34 +13,17 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # MongoDB Connection
-def connect_to_mongo():
-    max_retries = 5
-    retry_delay = 5
+try:
     MONGO_URI = os.getenv("MONGO_URI")
     if not MONGO_URI:
         logger.error("MONGO_URI environment variable not set")
         raise ValueError("MONGO_URI environment variable not set")
-    for attempt in range(max_retries):
-        try:
-            client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
-            client.admin.command('ping')  # Test the connection
-            logger.info("✅ Successfully connected to MongoDB.")
-            return client
-        except ConnectionFailure as e:
-            logger.error("Attempt %d: Error connecting to MongoDB: %s", attempt + 1, e)
-            if attempt < max_retries - 1:
-                time.sleep(retry_delay)
-            else:
-                raise
-
-try:
-    client = connect_to_mongo()
+    client = MongoClient(MONGO_URI)  # Initialize the client
     db = client["billing_db"]
+    logger.info("✅ Successfully connected to MongoDB.")
 except Exception as e:
-    logger.error("❌ Failed to connect to MongoDB: %s", e)
+    logger.error("❌ Error connecting to MongoDB: %s", e)
     raise
-
-# Rest of your routes remain unchanged
 
 @app.route('/')
 def index():
@@ -149,7 +130,7 @@ def get_invoices():
 
         invoices = list(db.invoices.find(query, {"_id": 1, "customer_name": 1, "date": 1, "total_amount": 1, "items": 1}))
         logger.info("Fetched %d invoices", len(invoices))
-        return dumps(invoices), 200, {'Content-Type': 'application/json'}
+        return dumps(in-purpose)
     except Exception as e:
         logger.error("Error fetching invoices: %s", e)
         return jsonify({"error": "Failed to fetch invoices"}), 500
