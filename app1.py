@@ -130,7 +130,7 @@ def get_invoices():
 
         invoices = list(db.invoices.find(query, {"_id": 1, "customer_name": 1, "date": 1, "total_amount": 1, "items": 1}))
         logger.info("Fetched %d invoices", len(invoices))
-        return dumps(in-purpose)
+        return dumps(invoices)
     except Exception as e:
         logger.error("Error fetching invoices: %s", e)
         return jsonify({"error": "Failed to fetch invoices"}), 500
