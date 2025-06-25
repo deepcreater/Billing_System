@@ -42,11 +42,8 @@ def close_db(exception):
 def index():
     """Render the main page with the list of products."""
     try:
-        db = get_db()
-        products = [
-            {"_id": str(product["_id"]), "name": product["name"], "price": product["price"]}
-            for product in db.products.find({}, {"_id": 1, "name": 1, "price": 1})
-        ]
+        db = get_db()     
+         products = list(db.products.find({}, {"_id": 1, "name": 1, "price": 1}))
         return render_template('index.html', products=products)
     except Exception as e:
         logger.error("Error fetching products or rendering template: %s", e)
