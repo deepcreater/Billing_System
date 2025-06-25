@@ -3,6 +3,8 @@ from pymongo import MongoClient
 from datetime import datetime
 from bson.json_util import dumps
 import logging
+import os
+
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -13,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 # MongoDB Connection
 try:
-    client = MongoClient("mongodb://localhost:27017/")
+    client = MongoClient(os.getenv("MONGO_URI"))
     db = client["billing_db"]
     logger.info("✅ Successfully connected to MongoDB.")
 except Exception as e:
