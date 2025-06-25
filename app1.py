@@ -4,7 +4,6 @@ from datetime import datetime
 from bson.json_util import dumps
 import logging
 import os
-MONGO_URI = "mongodb+srv://deepak7232914731:eaZ99fUMJd1wfGOR@cluster0.woqbxsd.mongodb.net/?retryWrites=true&w=majority&tls=true"
 
 
 # Initialize Flask app
@@ -16,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 # MongoDB Connection
 try:
-    client = MongoClient(os.getenv("MONGO_URI"))
+    MONGO_URI = os.getenv("MONGO_URI") or "mongodb+srv://deepak7232914731:eaZ99fUMJd1wfGOR@cluster0.woqbxsd.mongodb.net/?retryWrites=true&w=majority&tls=true"
     db = client["billing_db"]
     logger.info("✅ Successfully connected to MongoDB.")
 except Exception as e:
